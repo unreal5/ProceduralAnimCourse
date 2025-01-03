@@ -63,10 +63,11 @@ FRigUnit_SetFinalLegIK_Execute()
 FRigUnit_RotateAroundPoint_Execute()
 {
 	Result.SetScale3D(TransformToRotate.GetScale3D());
-	const auto Direction = TransformToRotate.GetLocation() - PointToRotateAround;
-	const auto TotalAmount = RotationAmount * TransformToRotate.GetRotation();
-	Result.SetRotation(TotalAmount);
-
-	const auto AfterRotation = RotationAmount.RotateVector(Direction);
-	Result.SetLocation(AfterRotation + PointToRotateAround);
+	/** 获取四元数A与另一个四元数B相乘的结果（A * B）。
+	在组合四元数时，顺序很重要：C = A * B 将产生一个四元数 C，该四元数在逻辑上首先应用 B，然后应用 A 到任何后续变换（先右后左）。
+	*/
+	Result.SetRotation(RotationAmount * TransformToRotate.GetRotation());
+	const auto ABVector = TransformToRotate.GetLocation() - PointToRotateAround;
+	const auto ModifiedVector = RotationAmount.RotateVector(ABVector);
+	Result.SetLocation(ModifiedVector + PointToRotateAround);
 }
