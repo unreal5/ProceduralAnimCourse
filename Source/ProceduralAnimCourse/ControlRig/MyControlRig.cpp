@@ -53,5 +53,20 @@ FRigUnit_SetFinalLegIK_Execute()
 
 		TwoBoneIK.ExecuteContext = ExecuteContext;
 		TwoBoneIK.Execute();
+
+		FQuat Rotation = FQuat::MakeFromEuler(FVector{0.f, 0.f, 45.f});
+		FVector Translation = FVector::XAxisVector;
+		auto result = Rotation.RotateVector(Translation);
 	}
+}
+
+FRigUnit_RotateAroundPoint_Execute()
+{
+	Result.SetScale3D(TransformToRotate.GetScale3D());
+	const auto Direction = TransformToRotate.GetLocation() - PointToRotateAround;
+	const auto TotalAmount = RotationAmount * TransformToRotate.GetRotation();
+	Result.SetRotation(TotalAmount);
+
+	const auto AfterRotation = RotationAmount.RotateVector(Direction);
+	Result.SetLocation(AfterRotation + PointToRotateAround);
 }
